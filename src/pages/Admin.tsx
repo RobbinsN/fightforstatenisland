@@ -14,6 +14,8 @@ import {
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { HostManager } from "@/components/HostManager";
+import { CheckInManager } from "@/components/CheckInManager";
+import { Badge } from "@/components/ui/badge";
 
 type RSVP = {
   id: string;
@@ -23,6 +25,8 @@ type RSVP = {
   phone: string;
   address: string;
   created_at: string;
+  checked_in: boolean;
+  checked_in_at: string | null;
 };
 
 export default function Admin() {
@@ -62,11 +66,30 @@ export default function Admin() {
 
       if (error) throw error;
 
-      // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: ['rsvps'] });
       toast.success("RSVP deleted successfully");
     } catch (error: any) {
       console.error('Delete error:', error);
+      toast.error(error.message);
+    }
+  };
+
+  const handleCheckIn = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('rsvps')
+        .update({
+          checked_in: true,
+          checked_in_at: new Date().toISOString(),
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ['rsvps'] });
+      toast.success("Attendee checked in successfully");
+    } catch (error: any) {
+      console.error('Check-in error:', error);
       toast.error(error.message);
     }
   };
@@ -115,9 +138,12 @@ export default function Admin() {
             <HostManager />
           </div>
 
-          {/* RSVP Management Section */}
+          {/* Check-in Section */}
           <div className="glass p-6 rounded-lg">
-            <h2 className="text-xl font-semibold mb-4">RSVP Submissions</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Check-in & Registration</h2>
+              <CheckInManager />
+            </div>
             
             {isLoading ? (
               <p className="text-muted-foreground">Loading RSVPs...</p>
@@ -131,6 +157,7 @@ export default function Admin() {
                       <TableHead>Email</TableHead>
                       <TableHead>Phone</TableHead>
                       <TableHead>Address</TableHead>
+                      <TableHead>Status</TableHead>
                       <TableHead>Submitted</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
@@ -143,15 +170,35 @@ export default function Admin() {
                         <TableCell>{rsvp.email}</TableCell>
                         <TableCell>{rsvp.phone}</TableCell>
                         <TableCell>{rsvp.address}</TableCell>
+                        <TableCell>
+                          {rsvp.checked_in ? (
+                            <Badge className="bg-green-500">
+                              Checked In {rsvp.checked_in_at && `at ${formatDate(rsvp.checked_in_at)}`}
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline">Not Checked In</Badge>
+                          )}
+                        </TableCell>
                         <TableCell>{formatDate(rsvp.created_at)}</TableCell>
                         <TableCell>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleDelete(rsvp.id)}
-                          >
-                            Delete
-                          </Button>
+                          <div className="space-x-2">
+                            {!rsvp.checked_in && (
+                              <Button
+                                size="sm"
+                                onClick={() => handleCheckIn(rsvp.id)}
+                                className="bg-green-500 hover:bg-green-600"
+                              >
+                                Check In
+                              </Button>
+                            )}
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleDelete(rsvp.id)}
+                            >
+                              Delete
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}

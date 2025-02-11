@@ -42,6 +42,8 @@ export type Database = {
       rsvps: {
         Row: {
           address: string
+          checked_in: boolean | null
+          checked_in_at: string | null
           created_at: string
           email: string | null
           first_name: string
@@ -52,6 +54,8 @@ export type Database = {
         }
         Insert: {
           address: string
+          checked_in?: boolean | null
+          checked_in_at?: string | null
           created_at?: string
           email?: string | null
           first_name: string
@@ -62,6 +66,8 @@ export type Database = {
         }
         Update: {
           address?: string
+          checked_in?: boolean | null
+          checked_in_at?: string | null
           created_at?: string
           email?: string | null
           first_name?: string
