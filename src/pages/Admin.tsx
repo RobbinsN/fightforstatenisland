@@ -17,7 +17,8 @@ import { HostManager } from "@/components/HostManager";
 
 type RSVP = {
   id: string;
-  full_name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
   address: string;
@@ -125,7 +126,8 @@ export default function Admin() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Name</TableHead>
+                      <TableHead>First Name</TableHead>
+                      <TableHead>Last Name</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Phone</TableHead>
                       <TableHead>Address</TableHead>
@@ -136,7 +138,8 @@ export default function Admin() {
                   <TableBody>
                     {rsvps.map((rsvp) => (
                       <TableRow key={rsvp.id}>
-                        <TableCell>{rsvp.full_name}</TableCell>
+                        <TableCell>{rsvp.first_name}</TableCell>
+                        <TableCell>{rsvp.last_name}</TableCell>
                         <TableCell>{rsvp.email}</TableCell>
                         <TableCell>{rsvp.phone}</TableCell>
                         <TableCell>{rsvp.address}</TableCell>
