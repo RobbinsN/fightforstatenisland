@@ -4,10 +4,24 @@ import { Hosts } from "@/components/Hosts";
 import { Button } from "@/components/ui/button";
 import { Youtube, MapPin, Calendar, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
-
-const GOOGLE_MAPS_API_KEY = "YOUR_API_KEY"; // Replace with your actual API key
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
+  const { data: mapApiKey } = useQuery({
+    queryKey: ['google-maps-api-key'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('secrets')
+        .select('value')
+        .eq('name', 'GOOGLE_MAPS_API_KEY')
+        .single();
+      
+      if (error) throw error;
+      return data.value;
+    }
+  });
+
   return (
     <div className="min-h-screen flex flex-col gap-16 py-12">
       {/* Hero Section */}
@@ -33,15 +47,21 @@ const Index = () => {
           <div className="grid md:grid-cols-2 gap-8">
             {/* Map */}
             <div className="h-[300px] rounded-lg overflow-hidden">
-              <iframe
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                loading="lazy"
-                allowFullScreen
-                referrerPolicy="no-referrer-when-downgrade"
-                src={`https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_API_KEY}&q=17+Cannon+Avenue,Staten+Island,NY+10314`}
-              ></iframe>
+              {mapApiKey ? (
+                <iframe
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  allowFullScreen
+                  referrerPolicy="no-referrer-when-downgrade"
+                  src={`https://www.google.com/maps/embed/v1/place?key=${mapApiKey}&q=17+Cannon+Avenue,Staten+Island,NY+10314`}
+                ></iframe>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-black/20">
+                  <MapPin className="w-8 h-8 text-secondary animate-pulse" />
+                </div>
+              )}
             </div>
 
             {/* Event Details */}
