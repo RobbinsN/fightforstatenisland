@@ -3,6 +3,7 @@ import { RSVPForm } from "@/components/RSVPForm";
 import { Hosts } from "@/components/Hosts";
 import { Button } from "@/components/ui/button";
 import { Youtube } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
@@ -55,10 +56,18 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="container mx-auto text-center mt-8 text-white/60">
-        <p>This conversation is open to residents of Travis only.</p>
-        <p>Off topic questions may not be addressed publicly.</p>
-        <p>SEATING IS LIMITED | RSVP REQUIRED</p>
+      <footer className="container mx-auto text-center mt-8">
+        <div className="space-y-2 text-white/60 mb-4">
+          <p>This conversation is open to residents of Travis only.</p>
+          <p>Off topic questions may not be addressed publicly.</p>
+          <p>SEATING IS LIMITED | RSVP REQUIRED</p>
+        </div>
+        <Link 
+          to="/auth" 
+          className="text-sm text-white/40 hover:text-white/60 transition-colors"
+        >
+          Admin Access
+        </Link>
       </footer>
     </div>
   );
