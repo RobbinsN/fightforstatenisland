@@ -27,7 +27,7 @@ export const HostManager = () => {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Host>>({});
-  const [newHost, setNewHost] = useState<Partial<Host>>({
+  const [newHost, setNewHost] = useState({
     name: "",
     title: "",
   });
@@ -46,7 +46,7 @@ export const HostManager = () => {
     }
   });
 
-  const handleImageUpload = async (file: File, hostId?: string) => {
+  const handleImageUpload = async (file: File) => {
     try {
       setUploading(true);
       const fileExt = file.name.split('.').pop();
@@ -92,11 +92,12 @@ export const HostManager = () => {
 
       const { error } = await supabase
         .from('hosts')
-        .insert([{
-          ...newHost,
+        .insert({
+          name: newHost.name,
+          title: newHost.title,
           image_url: imageUrl,
           order_index: hosts.length
-        }]);
+        });
 
       if (error) throw error;
 
@@ -132,7 +133,11 @@ export const HostManager = () => {
 
       const { error } = await supabase
         .from('hosts')
-        .update({ ...editForm, image_url: imageUrl })
+        .update({
+          name: editForm.name,
+          title: editForm.title,
+          image_url: imageUrl
+        })
         .eq('id', hostId);
 
       if (error) throw error;
