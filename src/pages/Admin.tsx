@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { HostManager } from "@/components/HostManager";
 
 type RSVP = {
   id: string;
@@ -106,49 +107,58 @@ export default function Admin() {
           </Button>
         </div>
         
-        <div className="glass p-6 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">RSVP Submissions</h2>
-          
-          {isLoading ? (
-            <p className="text-muted-foreground">Loading RSVPs...</p>
-          ) : rsvps && rsvps.length > 0 ? (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>Address</TableHead>
-                    <TableHead>Submitted</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {rsvps.map((rsvp) => (
-                    <TableRow key={rsvp.id}>
-                      <TableCell>{rsvp.full_name}</TableCell>
-                      <TableCell>{rsvp.email}</TableCell>
-                      <TableCell>{rsvp.phone}</TableCell>
-                      <TableCell>{rsvp.address}</TableCell>
-                      <TableCell>{formatDate(rsvp.created_at)}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleDelete(rsvp.id)}
-                        >
-                          Delete
-                        </Button>
-                      </TableCell>
+        <div className="space-y-8">
+          {/* Hosts Management Section */}
+          <div className="space-y-4">
+            <h2 className="text-2xl font-semibold">Manage Hosts</h2>
+            <HostManager />
+          </div>
+
+          {/* RSVP Management Section */}
+          <div className="glass p-6 rounded-lg">
+            <h2 className="text-xl font-semibold mb-4">RSVP Submissions</h2>
+            
+            {isLoading ? (
+              <p className="text-muted-foreground">Loading RSVPs...</p>
+            ) : rsvps && rsvps.length > 0 ? (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Phone</TableHead>
+                      <TableHead>Address</TableHead>
+                      <TableHead>Submitted</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          ) : (
-            <p className="text-muted-foreground">No RSVPs submitted yet.</p>
-          )}
+                  </TableHeader>
+                  <TableBody>
+                    {rsvps.map((rsvp) => (
+                      <TableRow key={rsvp.id}>
+                        <TableCell>{rsvp.full_name}</TableCell>
+                        <TableCell>{rsvp.email}</TableCell>
+                        <TableCell>{rsvp.phone}</TableCell>
+                        <TableCell>{rsvp.address}</TableCell>
+                        <TableCell>{formatDate(rsvp.created_at)}</TableCell>
+                        <TableCell>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDelete(rsvp.id)}
+                          >
+                            Delete
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            ) : (
+              <p className="text-muted-foreground">No RSVPs submitted yet.</p>
+            )}
+          </div>
         </div>
       </div>
     </div>
