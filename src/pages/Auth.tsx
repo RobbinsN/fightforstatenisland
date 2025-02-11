@@ -26,9 +26,13 @@ export default function Auth() {
       if (error) throw error;
 
       if (session) {
+        console.log("Session:", session); // Debug log
+        
         const { data: isAdmin, error: adminError } = await supabase.rpc('is_admin', {
           user_id: session.user.id
         });
+
+        console.log("Is admin check:", { isAdmin, adminError }); // Debug log
 
         if (adminError || !isAdmin) {
           await supabase.auth.signOut();
@@ -38,6 +42,7 @@ export default function Auth() {
         navigate("/admin");
       }
     } catch (error: any) {
+      console.error("Login error:", error); // Debug log
       toast.error(error.message);
     } finally {
       setLoading(false);
