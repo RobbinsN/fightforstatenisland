@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
@@ -86,6 +86,15 @@ export default function Auth() {
             {loading ? "Loading..." : "Sign In"}
           </Button>
         </form>
+
+        <div className="text-center">
+          <Link
+            to="/"
+            className="text-secondary hover:text-secondary/80 transition-colors"
+          >
+            ← Back to Home
+          </Link>
+        </div>
       </div>
     </div>
   );
