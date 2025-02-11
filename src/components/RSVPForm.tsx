@@ -32,7 +32,9 @@ export const RSVPForm = () => {
         .from('rsvps')
         .insert([
           {
-            full_name: `${formData.firstName} ${formData.lastName}`,
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            full_name: `${formData.firstName} ${formData.lastName}`, // Keep this for backward compatibility
             email: formData.email,
             phone: formData.phone,
             address: formData.address,
