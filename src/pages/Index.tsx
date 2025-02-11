@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Youtube, MapPin, Calendar, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 
+const GOOGLE_MAPS_API_KEY = "YOUR_API_KEY"; // Replace with your actual API key
+
 const Index = () => {
   return (
     <div className="min-h-screen flex flex-col gap-16 py-12">
@@ -38,7 +40,7 @@ const Index = () => {
                 loading="lazy"
                 allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
-                src={`https://www.google.com/maps/embed/v1/place?key=YOUR_GOOGLE_MAPS_API_KEY&q=17+Cannon+Avenue,Staten+Island,NY+10314`}
+                src={`https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_API_KEY}&q=17+Cannon+Avenue,Staten+Island,NY+10314`}
               ></iframe>
             </div>
 
