@@ -1,4 +1,3 @@
-
 import { RSVPForm } from "@/components/RSVPForm";
 import { Hosts } from "@/components/Hosts";
 import { Button } from "@/components/ui/button";
@@ -6,8 +5,11 @@ import { Youtube, MapPin, Calendar, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 
 const Index = () => {
+  const [countdown, setCountdown] = useState<string>("");
+
   const { data: mapApiKey } = useQuery({
     queryKey: ['google-maps-api-key'],
     queryFn: async () => {
@@ -21,6 +23,32 @@ const Index = () => {
       return data?.value;
     }
   });
+
+  useEffect(() => {
+    const targetDate = new Date('2025-03-27T19:00:00-04:00'); // 7 PM EST on March 27, 2025
+
+    const updateCountdown = () => {
+      const now = new Date();
+      const difference = targetDate.getTime() - now.getTime();
+
+      if (difference < 0) {
+        setCountdown("The event has started!");
+        return;
+      }
+
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+      setCountdown(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+    };
+
+    const timer = setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col gap-16 py-12">
@@ -103,14 +131,11 @@ const Index = () => {
             <Youtube className="w-16 h-16 text-secondary" />
           </div>
           <p className="text-lg mb-4">
-            The event will be streamed live on YouTube and Facebook
+            Return here on March 27th at 7:00 PM EST to watch the livestream on YouTube and Facebook
           </p>
-          <Button 
-            className="bg-secondary text-primary hover:bg-secondary/90"
-            onClick={() => window.open("https://TravisTalks.com", "_blank")}
-          >
-            Visit TravisTalks.com
-          </Button>
+          <div className="text-2xl font-bold text-secondary">
+            Time until livestream: {countdown}
+          </div>
         </div>
       </section>
 

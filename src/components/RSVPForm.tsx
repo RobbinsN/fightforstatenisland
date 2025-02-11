@@ -9,10 +9,11 @@ import { supabase } from "@/integrations/supabase/client";
 export const RSVPForm = () => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
+    firstName: "",
+    lastName: "",
     address: "",
+    phone: "",
+    email: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,8 +21,8 @@ export const RSVPForm = () => {
     setLoading(true);
     
     // Basic validation
-    if (!formData.name || !formData.email || !formData.phone || !formData.address) {
-      toast.error("Please fill in all fields");
+    if (!formData.firstName || !formData.lastName || !formData.phone || !formData.address) {
+      toast.error("Please fill in all required fields");
       setLoading(false);
       return;
     }
@@ -31,7 +32,7 @@ export const RSVPForm = () => {
         .from('rsvps')
         .insert([
           {
-            full_name: formData.name,
+            full_name: `${formData.firstName} ${formData.lastName}`,
             email: formData.email,
             phone: formData.phone,
             address: formData.address,
@@ -41,7 +42,7 @@ export const RSVPForm = () => {
       if (error) throw error;
 
       toast.success("RSVP received! You will receive a confirmation email shortly.");
-      setFormData({ name: "", email: "", phone: "", address: "" });
+      setFormData({ firstName: "", lastName: "", email: "", phone: "", address: "" });
     } catch (error: any) {
       console.error('RSVP submission error:', error);
       toast.error(error.message);
@@ -52,14 +53,54 @@ export const RSVPForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 glass p-6 rounded-lg max-w-md mx-auto">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
+          <Input
+            id="firstName"
+            value={formData.firstName}
+            onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+            className="bg-white/10"
+            disabled={loading}
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="lastName">Last Name <span className="text-red-500">*</span></Label>
+          <Input
+            id="lastName"
+            value={formData.lastName}
+            onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+            className="bg-white/10"
+            disabled={loading}
+            required
+          />
+        </div>
+      </div>
       <div className="space-y-2">
-        <Label htmlFor="name">Full Name</Label>
+        <Label htmlFor="address">Address <span className="text-red-500">*</span></Label>
+        <div className="text-sm text-white/70 mb-2">
+          Note: In-person seating is exclusively reserved for Travis residents due to limited capacity
+        </div>
         <Input
-          id="name"
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          id="address"
+          value={formData.address}
+          onChange={(e) => setFormData({ ...formData, address: e.target.value })}
           className="bg-white/10"
           disabled={loading}
+          required
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="phone">Phone Number <span className="text-red-500">*</span></Label>
+        <Input
+          id="phone"
+          type="tel"
+          value={formData.phone}
+          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+          className="bg-white/10"
+          disabled={loading}
+          required
         />
       </div>
       <div className="space-y-2">
@@ -69,27 +110,6 @@ export const RSVPForm = () => {
           type="email"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          className="bg-white/10"
-          disabled={loading}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="phone">Phone</Label>
-        <Input
-          id="phone"
-          type="tel"
-          value={formData.phone}
-          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-          className="bg-white/10"
-          disabled={loading}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="address">Address</Label>
-        <Input
-          id="address"
-          value={formData.address}
-          onChange={(e) => setFormData({ ...formData, address: e.target.value })}
           className="bg-white/10"
           disabled={loading}
         />
