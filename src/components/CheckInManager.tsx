@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -83,35 +84,37 @@ export const CheckInManager = () => {
         <DialogTrigger asChild>
           <Button className="mb-4">Register New Attendee</Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="bg-white text-gray-900">
           <DialogHeader>
-            <DialogTitle>Register New Attendee</DialogTitle>
+            <DialogTitle className="text-gray-900">Register New Attendee</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleOnSiteRegistration} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name *</Label>
+                <Label htmlFor="firstName" className="text-gray-900">First Name *</Label>
                 <Input
                   id="firstName"
                   value={newAttendee.firstName}
                   onChange={(e) => setNewAttendee({ ...newAttendee, firstName: e.target.value })}
                   required
                   disabled={loading}
+                  className="text-gray-900 bg-white border-gray-300"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name *</Label>
+                <Label htmlFor="lastName" className="text-gray-900">Last Name *</Label>
                 <Input
                   id="lastName"
                   value={newAttendee.lastName}
                   onChange={(e) => setNewAttendee({ ...newAttendee, lastName: e.target.value })}
                   required
                   disabled={loading}
+                  className="text-gray-900 bg-white border-gray-300"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone *</Label>
+              <Label htmlFor="phone" className="text-gray-900">Phone *</Label>
               <Input
                 id="phone"
                 type="tel"
@@ -119,25 +122,28 @@ export const CheckInManager = () => {
                 onChange={(e) => setNewAttendee({ ...newAttendee, phone: e.target.value })}
                 required
                 disabled={loading}
+                className="text-gray-900 bg-white border-gray-300"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-gray-900">Email</Label>
               <Input
                 id="email"
                 type="email"
                 value={newAttendee.email}
                 onChange={(e) => setNewAttendee({ ...newAttendee, email: e.target.value })}
                 disabled={loading}
+                className="text-gray-900 bg-white border-gray-300"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
+              <Label htmlFor="address" className="text-gray-900">Address</Label>
               <Input
                 id="address"
                 value={newAttendee.address}
                 onChange={(e) => setNewAttendee({ ...newAttendee, address: e.target.value })}
                 disabled={loading}
+                className="text-gray-900 bg-white border-gray-300"
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
