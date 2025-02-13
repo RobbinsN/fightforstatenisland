@@ -89,7 +89,7 @@ export default function Admin() {
             <div className="glass p-6 rounded-lg">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Check-in & Registration</h2>
-                <CheckInManager onCheckIn={() => {}} />
+                <CheckInManager />
               </div>
               <div className="mt-6">
                 <RSVPManager />
