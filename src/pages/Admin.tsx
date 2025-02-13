@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { HostManager } from "@/components/HostManager";
 import { CheckInManager } from "@/components/CheckInManager";
 import { CommentManager } from "@/components/CommentManager";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   Table,
@@ -117,6 +117,8 @@ export default function Admin() {
 }
 
 const RSVPManager = () => {
+  const queryClient = useQueryClient();
+
   const { data: rsvps = [], isLoading } = useQuery({
     queryKey: ['rsvps'],
     queryFn: async () => {
@@ -127,13 +129,12 @@ const RSVPManager = () => {
       
       if (error) throw error;
       return data;
-    }
+    },
+    refetchInterval: 5000, // Refetch every 5 seconds
   });
 
-  const queryClient = useQueryClient();
-
-  const handleCheckIn = async (id: string) => {
-    try {
+  const checkInMutation = useMutation({
+    mutationFn: async (id: string) => {
       const { error } = await supabase
         .from('rsvps')
         .update({
@@ -143,13 +144,20 @@ const RSVPManager = () => {
         .eq('id', id);
 
       if (error) throw error;
-
+      return id;
+    },
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rsvps'] });
       toast.success("Attendee checked in successfully");
-    } catch (error: any) {
+    },
+    onError: (error: any) => {
       console.error('Check-in error:', error);
       toast.error(error.message);
-    }
+    },
+  });
+
+  const handleCheckIn = (id: string) => {
+    checkInMutation.mutate(id);
   };
 
   if (isLoading) {
@@ -194,8 +202,9 @@ const RSVPManager = () => {
                   size="sm"
                   onClick={() => handleCheckIn(rsvp.id)}
                   className="bg-green-500 hover:bg-green-600"
+                  disabled={checkInMutation.isPending}
                 >
-                  Check In
+                  {checkInMutation.isPending ? "Checking In..." : "Check In"}
                 </Button>
               )}
             </TableCell>
