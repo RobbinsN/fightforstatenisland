@@ -76,6 +76,8 @@ export const RSVPForm = () => {
                 firstName: formData.firstName,
                 lastName: formData.lastName,
                 email: formData.email,
+                phone: formData.phone,
+                comment: formData.comment.trim() || undefined,
               },
             }
           );
