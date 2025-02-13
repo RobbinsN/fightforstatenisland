@@ -1,5 +1,7 @@
+
 import { RSVPForm } from "@/components/RSVPForm";
 import { Hosts } from "@/components/Hosts";
+import { CommentForm } from "@/components/CommentForm";
 import { Button } from "@/components/ui/button";
 import { Youtube, MapPin, Calendar, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -121,6 +123,16 @@ const Index = () => {
       <section className="container mx-auto animate-fadeIn" style={{ animationDelay: "400ms" }}>
         <h2 className="text-3xl font-bold text-center mb-8">RSVP for In-Person Attendance</h2>
         <RSVPForm />
+      </section>
+
+      {/* Comments Section */}
+      <section className="container mx-auto animate-fadeIn" style={{ animationDelay: "500ms" }}>
+        <div className="max-w-2xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-8">Submit Questions or Comments</h2>
+          <div className="glass p-6 rounded-lg">
+            <CommentForm />
+          </div>
+        </div>
       </section>
 
       {/* Livestream Section */}

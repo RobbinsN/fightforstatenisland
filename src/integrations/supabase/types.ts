@@ -9,6 +9,56 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      comments: {
+        Row: {
+          address: string
+          comment: string
+          created_at: string
+          first_name: string
+          id: string
+          last_name: string
+          phone: string
+          response: string | null
+          reviewed_at: string | null
+          rsvp_id: string | null
+          status: string | null
+        }
+        Insert: {
+          address: string
+          comment: string
+          created_at?: string
+          first_name: string
+          id?: string
+          last_name: string
+          phone: string
+          response?: string | null
+          reviewed_at?: string | null
+          rsvp_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          address?: string
+          comment?: string
+          created_at?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          phone?: string
+          response?: string | null
+          reviewed_at?: string | null
+          rsvp_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_rsvp_id_fkey"
+            columns: ["rsvp_id"]
+            isOneToOne: false
+            referencedRelation: "rsvps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hosts: {
         Row: {
           created_at: string

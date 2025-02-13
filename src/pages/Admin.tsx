@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,6 +15,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { HostManager } from "@/components/HostManager";
 import { CheckInManager } from "@/components/CheckInManager";
 import { Badge } from "@/components/ui/badge";
+import { CommentManager } from "@/components/CommentManager";
 
 type RSVP = {
   id: string;
@@ -136,6 +136,12 @@ export default function Admin() {
           <div className="space-y-4">
             <h2 className="text-2xl font-semibold">Manage Hosts</h2>
             <HostManager />
+          </div>
+
+          {/* Comments Management Section */}
+          <div className="glass p-6 rounded-lg">
+            <h2 className="text-xl font-semibold mb-4">Questions & Comments</h2>
+            <CommentManager />
           </div>
 
           {/* Check-in Section */}
