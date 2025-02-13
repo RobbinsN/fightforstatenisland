@@ -66,6 +66,29 @@ export const RSVPForm = () => {
         if (commentError) throw commentError;
       }
 
+      // Send confirmation email if email is provided
+      if (formData.email) {
+        try {
+          const { data: emailResponse, error: emailError } = await supabase.functions.invoke(
+            'send-rsvp-confirmation',
+            {
+              body: {
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                email: formData.email,
+              },
+            }
+          );
+
+          if (emailError) {
+            console.error('Error sending confirmation email:', emailError);
+            // Don't throw the error as we still want to show success for the RSVP
+          }
+        } catch (emailError) {
+          console.error('Error calling email function:', emailError);
+        }
+      }
+
       toast.success("RSVP received! You will receive a confirmation email shortly.");
       setFormData({
         firstName: "",
