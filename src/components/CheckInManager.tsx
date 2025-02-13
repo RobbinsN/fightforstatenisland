@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -33,29 +32,6 @@ export const CheckInManager = () => {
     phone: "",
     address: "",
   });
-
-  const handleCheckIn = async (rsvpId: string) => {
-    try {
-      setLoading(true);
-      const { error } = await supabase
-        .from('rsvps')
-        .update({
-          checked_in: true,
-          checked_in_at: new Date().toISOString(),
-        })
-        .eq('id', rsvpId);
-
-      if (error) throw error;
-
-      queryClient.invalidateQueries({ queryKey: ['rsvps'] });
-      toast.success("Attendee checked in successfully");
-    } catch (error: any) {
-      console.error('Check-in error:', error);
-      toast.error(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleOnSiteRegistration = async (e: React.FormEvent) => {
     e.preventDefault();
