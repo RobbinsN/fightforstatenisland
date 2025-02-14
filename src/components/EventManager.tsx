@@ -163,100 +163,108 @@ export const EventManager = () => {
         <DialogTrigger asChild>
           <Button>Create New Event</Button>
         </DialogTrigger>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl bg-card text-white">
           <DialogHeader>
-            <DialogTitle>Create New Event</DialogTitle>
+            <DialogTitle className="text-white">Create New Event</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Event Title</Label>
+                <Label htmlFor="title" className="text-white">Event Title</Label>
                 <Input
                   id="title"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   required
+                  className="bg-background text-white placeholder:text-gray-400 border-white/10"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="subtitle">Subtitle/Description</Label>
+                <Label htmlFor="subtitle" className="text-white">Subtitle/Description</Label>
                 <Input
                   id="subtitle"
                   value={formData.subtitle}
                   onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
                   required
+                  className="bg-background text-white placeholder:text-gray-400 border-white/10"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Event Date</Label>
+                <Label className="text-white">Event Date</Label>
                 <Calendar
                   mode="single"
                   selected={selectedDate}
                   onSelect={setSelectedDate}
-                  className="rounded-md border"
+                  className="rounded-md border bg-card text-white border-white/10"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="time">Event Time</Label>
+                <Label htmlFor="time" className="text-white">Event Time</Label>
                 <Input
                   id="time"
                   type="time"
                   value={selectedTime}
                   onChange={(e) => setSelectedTime(e.target.value)}
                   required
+                  className="bg-background text-white border-white/10"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="location_name">Venue Name</Label>
+              <Label htmlFor="location_name" className="text-white">Venue Name</Label>
               <Input
                 id="location_name"
                 value={formData.location_name}
                 onChange={(e) => setFormData({ ...formData, location_name: e.target.value })}
                 required
+                className="bg-background text-white placeholder:text-gray-400 border-white/10"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="address">Street Address</Label>
+              <Label htmlFor="address" className="text-white">Street Address</Label>
               <Input
                 id="address"
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 required
+                className="bg-background text-white placeholder:text-gray-400 border-white/10"
               />
             </div>
 
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="city">City</Label>
+                <Label htmlFor="city" className="text-white">City</Label>
                 <Input
                   id="city"
                   value={formData.city}
                   onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                   required
+                  className="bg-background text-white placeholder:text-gray-400 border-white/10"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="state">State</Label>
+                <Label htmlFor="state" className="text-white">State</Label>
                 <Input
                   id="state"
                   value={formData.state}
                   onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                   required
+                  className="bg-background text-white placeholder:text-gray-400 border-white/10"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="zip">ZIP Code</Label>
+                <Label htmlFor="zip" className="text-white">ZIP Code</Label>
                 <Input
                   id="zip"
                   value={formData.zip}
                   onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
                   required
+                  className="bg-background text-white placeholder:text-gray-400 border-white/10"
                 />
               </div>
             </div>
@@ -268,8 +276,9 @@ export const EventManager = () => {
                 onCheckedChange={(checked) => 
                   setFormData({ ...formData, published: checked as boolean })
                 }
+                className="border-white/10"
               />
-              <Label htmlFor="published">Publish Event</Label>
+              <Label htmlFor="published" className="text-white">Publish Event</Label>
             </div>
 
             <Button type="submit" className="w-full">
