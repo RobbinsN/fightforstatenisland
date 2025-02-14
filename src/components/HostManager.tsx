@@ -168,9 +168,13 @@ export const HostManager = () => {
   const handleReorder = async (reorderedHosts: Host[]) => {
     try {
       // Update each host's order_index in the database
+      // Include all required fields when updating
       const updates = reorderedHosts.map((host) => ({
         id: host.id,
         order_index: host.order_index,
+        name: host.name,
+        title: host.title,
+        image_url: host.image_url
       }));
 
       const { error } = await supabase

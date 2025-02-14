@@ -1,4 +1,3 @@
-
 import {
   DndContext,
   closestCenter,
@@ -38,7 +37,7 @@ type Host = {
 
 interface SortableItemProps {
   host: Host;
-  isEditing: boolean;
+  isEditing: boolean | null;
   editForm: Partial<Host>;
   setEditForm: (form: Partial<Host>) => void;
   onEdit: (host: Host) => void;
