@@ -7,14 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { ImageCropDialog } from "./ImageCropDialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { SortableHostList } from "./SortableHostList";
 
 type Host = {
   id: string;
@@ -172,6 +165,29 @@ export const HostManager = () => {
     }
   };
 
+  const handleReorder = async (reorderedHosts: Host[]) => {
+    try {
+      // Update each host's order_index in the database
+      const updates = reorderedHosts.map((host) => ({
+        id: host.id,
+        order_index: host.order_index,
+      }));
+
+      const { error } = await supabase
+        .from('hosts')
+        .upsert(updates);
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ['hosts'] });
+      toast.success("Host order updated successfully");
+    } catch (error: any) {
+      toast.error(error.message);
+      // Refresh the list to show the original order
+      queryClient.invalidateQueries({ queryKey: ['hosts'] });
+    }
+  };
+
   if (isLoading) return <div>Loading...</div>;
 
   return (
@@ -215,100 +231,21 @@ export const HostManager = () => {
 
       <div className="glass p-6 rounded-lg">
         <h3 className="text-lg font-semibold mb-4">Manage Hosts</h3>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Image</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {hosts.map((host) => (
-              <TableRow key={host.id}>
-                <TableCell>
-                  <img
-                    src={host.image_url}
-                    alt={host.name}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                  {isEditing === host.id && (
-                    <Input
-                      id={`host-image-${host.id}`}
-                      type="file"
-                      accept="image/*"
-                      className="mt-2 bg-white/10"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleImageSelect(file, host.id);
-                      }}
-                    />
-                  )}
-                </TableCell>
-                <TableCell>
-                  {isEditing === host.id ? (
-                    <Input
-                      value={editForm.name}
-                      onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                      className="bg-white/10"
-                    />
-                  ) : (
-                    host.name
-                  )}
-                </TableCell>
-                <TableCell>
-                  {isEditing === host.id ? (
-                    <Input
-                      value={editForm.title}
-                      onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                      className="bg-white/10"
-                    />
-                  ) : (
-                    host.title
-                  )}
-                </TableCell>
-                <TableCell>
-                  {isEditing === host.id ? (
-                    <div className="space-x-2">
-                      <Button
-                        size="sm"
-                        onClick={() => handleSave(host.id)}
-                        disabled={uploading}
-                      >
-                        {uploading ? "Saving..." : "Save"}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setIsEditing(null)}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="space-x-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleEdit(host)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => handleDelete(host.id)}
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <p className="text-sm text-muted-foreground mb-4">
+          Drag and drop hosts to reorder them. Changes are saved automatically.
+        </p>
+        <SortableHostList
+          hosts={hosts}
+          isEditing={isEditing}
+          editForm={editForm}
+          setEditForm={setEditForm}
+          onEdit={handleEdit}
+          onSave={handleSave}
+          onDelete={handleDelete}
+          onImageSelect={handleImageSelect}
+          onReorder={handleReorder}
+          uploading={uploading}
+        />
       </div>
 
       {selectedImage && (
