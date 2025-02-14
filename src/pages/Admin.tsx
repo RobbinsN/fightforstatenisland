@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { HostManager } from "@/components/HostManager";
 import { CheckInManager } from "@/components/CheckInManager";
 import { CommentManager } from "@/components/CommentManager";
+import { EventManager } from "@/components/EventManager";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -78,12 +79,20 @@ export default function Admin() {
           </Button>
         </div>
 
-        <Tabs defaultValue="rsvps" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
+        <Tabs defaultValue="events" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
+            <TabsTrigger value="events">Events</TabsTrigger>
             <TabsTrigger value="rsvps">RSVPs & Check-in</TabsTrigger>
             <TabsTrigger value="hosts">Hosts</TabsTrigger>
             <TabsTrigger value="comments">Comments</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="events" className="space-y-4">
+            <div className="glass p-6 rounded-lg">
+              <h2 className="text-xl font-semibold mb-4">Event Management</h2>
+              <EventManager />
+            </div>
+          </TabsContent>
 
           <TabsContent value="rsvps" className="space-y-4">
             <div className="glass p-6 rounded-lg">

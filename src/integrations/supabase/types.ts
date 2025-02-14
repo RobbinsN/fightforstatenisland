@@ -59,6 +59,203 @@ export type Database = {
           },
         ]
       }
+      event_comments: {
+        Row: {
+          address: string
+          comment: string
+          created_at: string
+          event_id: string | null
+          first_name: string
+          id: string
+          last_name: string
+          phone: string
+          response: string | null
+          reviewed_at: string | null
+          rsvp_id: string | null
+          status: string | null
+        }
+        Insert: {
+          address: string
+          comment: string
+          created_at?: string
+          event_id?: string | null
+          first_name: string
+          id?: string
+          last_name: string
+          phone: string
+          response?: string | null
+          reviewed_at?: string | null
+          rsvp_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          address?: string
+          comment?: string
+          created_at?: string
+          event_id?: string | null
+          first_name?: string
+          id?: string
+          last_name?: string
+          phone?: string
+          response?: string | null
+          reviewed_at?: string | null
+          rsvp_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_comments_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_comments_rsvp_id_fkey"
+            columns: ["rsvp_id"]
+            isOneToOne: false
+            referencedRelation: "event_rsvps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_hosts: {
+        Row: {
+          created_at: string
+          event_id: string | null
+          host_id: string | null
+          id: string
+          order_index: number
+        }
+        Insert: {
+          created_at?: string
+          event_id?: string | null
+          host_id?: string | null
+          id?: string
+          order_index?: number
+        }
+        Update: {
+          created_at?: string
+          event_id?: string | null
+          host_id?: string | null
+          id?: string
+          order_index?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_hosts_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_hosts_host_id_fkey"
+            columns: ["host_id"]
+            isOneToOne: false
+            referencedRelation: "hosts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_rsvps: {
+        Row: {
+          address: string
+          checked_in: boolean | null
+          checked_in_at: string | null
+          created_at: string
+          email: string | null
+          event_id: string | null
+          first_name: string
+          full_name: string
+          id: string
+          last_name: string
+          phone: string
+        }
+        Insert: {
+          address: string
+          checked_in?: boolean | null
+          checked_in_at?: string | null
+          created_at?: string
+          email?: string | null
+          event_id?: string | null
+          first_name: string
+          full_name: string
+          id?: string
+          last_name: string
+          phone: string
+        }
+        Update: {
+          address?: string
+          checked_in?: boolean | null
+          checked_in_at?: string | null
+          created_at?: string
+          email?: string | null
+          event_id?: string | null
+          first_name?: string
+          full_name?: string
+          id?: string
+          last_name?: string
+          phone?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_rsvps_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          address: string
+          city: string
+          created_at: string
+          event_date: string
+          id: string
+          location_name: string
+          published: boolean
+          slug: string
+          state: string
+          subtitle: string
+          title: string
+          updated_at: string
+          zip: string
+        }
+        Insert: {
+          address: string
+          city: string
+          created_at?: string
+          event_date: string
+          id?: string
+          location_name: string
+          published?: boolean
+          slug: string
+          state: string
+          subtitle: string
+          title: string
+          updated_at?: string
+          zip: string
+        }
+        Update: {
+          address?: string
+          city?: string
+          created_at?: string
+          event_date?: string
+          id?: string
+          location_name?: string
+          published?: boolean
+          slug?: string
+          state?: string
+          subtitle?: string
+          title?: string
+          updated_at?: string
+          zip?: string
+        }
+        Relationships: []
+      }
       hosts: {
         Row: {
           created_at: string
