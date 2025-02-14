@@ -21,22 +21,7 @@ export const Hosts = () => {
         .order('order_index');
       
       if (error) throw error;
-      
-      // Custom sort to place Lanza between Pirozzolo and Fossella
-      return data?.sort((a, b) => {
-        // Helper function to determine if a name contains a specific string
-        const hasName = (fullName: string, searchName: string) => 
-          fullName.toLowerCase().includes(searchName.toLowerCase());
-
-        // Specific ordering logic
-        if (hasName(a.name, 'Pirozzolo')) return -1;
-        if (hasName(b.name, 'Pirozzolo')) return 1;
-        if (hasName(a.name, 'Lanza') && hasName(b.name, 'Fossella')) return -1;
-        if (hasName(b.name, 'Lanza') && hasName(a.name, 'Fossella')) return 1;
-        
-        // Use order_index for any other cases
-        return a.order_index - b.order_index;
-      }) as Host[];
+      return data as Host[];
     }
   });
 
