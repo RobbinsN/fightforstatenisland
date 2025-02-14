@@ -21,12 +21,18 @@ export const Hosts = () => {
         .order('order_index');
       
       if (error) throw error;
-      return data as Host[];
+      
+      // Reorder to put Lanza after Pirozzolo
+      return data?.sort((a, b) => {
+        if (a.name.includes('Lanza') && b.name.includes('Pirozzolo')) return 1;
+        if (a.name.includes('Pirozzolo') && b.name.includes('Lanza')) return -1;
+        return a.order_index - b.order_index;
+      }) as Host[];
     }
   });
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 px-4 max-w-5xl mx-auto justify-center">
+    <div className="flex flex-wrap justify-center gap-6 px-4 max-w-7xl mx-auto">
       {hosts.map((host, index) => (
         <Card key={host.id} className="glass p-4 flex flex-col items-center animate-fadeIn" style={{ animationDelay: `${index * 100}ms` }}>
           <div className="w-24 h-24 rounded-full overflow-hidden mb-4">

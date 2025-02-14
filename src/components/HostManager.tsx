@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { ImageCropDialog } from "./ImageCropDialog";
 import {
   Table,
   TableBody,
@@ -32,6 +33,9 @@ export const HostManager = () => {
     title: "",
   });
   const [uploading, setUploading] = useState(false);
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<{ file: File, url: string } | null>(null);
+  const [isEditingImage, setIsEditingImage] = useState<string | null>(null);
 
   const { data: hosts = [], isLoading } = useQuery({
     queryKey: ['hosts'],
@@ -46,16 +50,22 @@ export const HostManager = () => {
     }
   });
 
-  const handleImageUpload = async (file: File) => {
+  const handleImageSelect = (file: File, hostId?: string) => {
+    const url = URL.createObjectURL(file);
+    setSelectedImage({ file, url });
+    setCropDialogOpen(true);
+    setIsEditingImage(hostId || null);
+  };
+
+  const handleCropComplete = async (croppedBlob: Blob) => {
     try {
       setUploading(true);
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
+      const fileName = `${Math.random()}.jpg`;
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('hosts')
-        .upload(filePath, file);
+        .upload(filePath, croppedBlob);
 
       if (uploadError) throw uploadError;
 
@@ -63,33 +73,37 @@ export const HostManager = () => {
         .from('hosts')
         .getPublicUrl(filePath);
 
-      return publicUrl;
+      if (isEditingImage) {
+        setEditForm(prev => ({ ...prev, image_url: publicUrl }));
+      } else {
+        // For new host
+        const fileInput = document.getElementById('new-host-image') as HTMLInputElement;
+        if (fileInput) fileInput.value = '';
+        await handleAdd(publicUrl);
+      }
+
+      setSelectedImage(null);
+      setCropDialogOpen(false);
+      setIsEditingImage(null);
     } catch (error: any) {
       toast.error('Error uploading image: ' + error.message);
-      return null;
     } finally {
       setUploading(false);
     }
   };
 
-  const handleAdd = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAdd = async (imageUrl?: string) => {
     if (!newHost.name || !newHost.title) {
       toast.error("Please fill in all fields");
       return;
     }
 
-    const fileInput = document.getElementById('new-host-image') as HTMLInputElement;
-    const file = fileInput?.files?.[0];
-    if (!file) {
+    if (!imageUrl && !selectedImage) {
       toast.error("Please select an image");
       return;
     }
 
     try {
-      const imageUrl = await handleImageUpload(file);
-      if (!imageUrl) return;
-
       const { error } = await supabase
         .from('hosts')
         .insert({
@@ -103,7 +117,6 @@ export const HostManager = () => {
 
       queryClient.invalidateQueries({ queryKey: ['hosts'] });
       setNewHost({ name: "", title: "" });
-      fileInput.value = "";
       toast.success("Host added successfully");
     } catch (error: any) {
       toast.error(error.message);
@@ -122,21 +135,12 @@ export const HostManager = () => {
     }
 
     try {
-      let imageUrl = editForm.image_url;
-      const fileInput = document.getElementById(`host-image-${hostId}`) as HTMLInputElement;
-      const file = fileInput?.files?.[0];
-      
-      if (file) {
-        const newImageUrl = await handleImageUpload(file);
-        if (newImageUrl) imageUrl = newImageUrl;
-      }
-
       const { error } = await supabase
         .from('hosts')
         .update({
           name: editForm.name,
           title: editForm.title,
-          image_url: imageUrl
+          image_url: editForm.image_url
         })
         .eq('id', hostId);
 
@@ -172,7 +176,7 @@ export const HostManager = () => {
 
   return (
     <div className="space-y-8">
-      <form onSubmit={handleAdd} className="space-y-4 glass p-6 rounded-lg">
+      <form onSubmit={(e) => { e.preventDefault(); }} className="space-y-4 glass p-6 rounded-lg">
         <h3 className="text-lg font-semibold">Add New Host</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -201,11 +205,12 @@ export const HostManager = () => {
             type="file"
             accept="image/*"
             className="bg-white/10"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleImageSelect(file);
+            }}
           />
         </div>
-        <Button type="submit" disabled={uploading}>
-          {uploading ? "Uploading..." : "Add Host"}
-        </Button>
       </form>
 
       <div className="glass p-6 rounded-lg">
@@ -234,6 +239,10 @@ export const HostManager = () => {
                       type="file"
                       accept="image/*"
                       className="mt-2 bg-white/10"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleImageSelect(file, host.id);
+                      }}
                     />
                   )}
                 </TableCell>
@@ -301,6 +310,20 @@ export const HostManager = () => {
           </TableBody>
         </Table>
       </div>
+
+      {selectedImage && (
+        <ImageCropDialog
+          open={cropDialogOpen}
+          onClose={() => {
+            setCropDialogOpen(false);
+            setSelectedImage(null);
+            setIsEditingImage(null);
+          }}
+          imageUrl={selectedImage.url}
+          onCropComplete={handleCropComplete}
+          aspectRatio={1}
+        />
+      )}
     </div>
   );
 };
