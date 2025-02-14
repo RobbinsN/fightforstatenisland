@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -169,17 +168,14 @@ export const HostManager = () => {
     try {
       // Update each host's order_index in the database
       // Include all required fields when updating
-      const updates = reorderedHosts.map((host) => ({
-        id: host.id,
-        order_index: host.order_index,
-        name: host.name,
-        title: host.title,
-        image_url: host.image_url
+      const updates = reorderedHosts.map((host, index) => ({
+        ...host,
+        order_index: index, // Ensure order_index is sequential
       }));
 
       const { error } = await supabase
         .from('hosts')
-        .upsert(updates);
+        .upsert(updates, { onConflict: 'id' });
 
       if (error) throw error;
 

@@ -37,7 +37,7 @@ type Host = {
 
 interface SortableItemProps {
   host: Host;
-  isEditing: boolean | null;
+  isEditing: string | null;
   editForm: Partial<Host>;
   setEditForm: (form: Partial<Host>) => void;
   onEdit: (host: Host) => void;
