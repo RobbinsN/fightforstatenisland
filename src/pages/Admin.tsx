@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -37,14 +36,12 @@ export default function Admin() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check authentication status on mount
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
         navigate("/auth");
         return;
       }
 
-      // Verify admin status
       supabase.rpc('is_admin', {
         user_id: session.user.id
       }).then(({ data: isAdmin, error: adminError }) => {
@@ -55,7 +52,6 @@ export default function Admin() {
       });
     });
 
-    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_OUT') {
         navigate("/auth");
@@ -151,6 +147,9 @@ const RSVPManager = () => {
     refetchInterval: 5000, // Refetch every 5 seconds
   });
 
+  const totalRegistrations = rsvps.length;
+  const totalCheckedIn = rsvps.filter(rsvp => rsvp.checked_in).length;
+
   const checkInMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
@@ -210,10 +209,8 @@ const RSVPManager = () => {
       return;
     }
     
-    // CSV header
     const headers = ["Full Name", "Email", "Phone", "Address", "Registered Date", "Check-in Status", "Check-in Time"];
     
-    // Format data
     const csvData = rsvps.map(rsvp => [
       rsvp.full_name,
       rsvp.email || "N/A",
@@ -224,16 +221,13 @@ const RSVPManager = () => {
       rsvp.checked_in_at ? new Date(rsvp.checked_in_at).toLocaleString() : "N/A"
     ]);
     
-    // Combine header and data
     const csvContent = [
       headers.join(","),
       ...csvData.map(row => row.map(cell => 
-        // Escape commas and quotes in cell values
-        `"${String(cell).replace(/"/g, '""')}"`
+        `"${String(cell).replace(/"/g, '""')}`
       ).join(","))
     ].join("\n");
     
-    // Create download link
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -252,6 +246,17 @@ const RSVPManager = () => {
 
   return (
     <div>
+      <div className="glass mb-6 p-4 rounded-lg grid grid-cols-2 gap-4">
+        <div className="bg-white/10 p-4 rounded-lg">
+          <h3 className="text-sm font-medium text-white/60 mb-1">Total Registrations</h3>
+          <p className="text-3xl font-bold">{totalRegistrations}</p>
+        </div>
+        <div className="bg-white/10 p-4 rounded-lg">
+          <h3 className="text-sm font-medium text-white/60 mb-1">Checked In</h3>
+          <p className="text-3xl font-bold">{totalCheckedIn} <span className="text-sm text-white/60">({totalRegistrations > 0 ? Math.round((totalCheckedIn / totalRegistrations) * 100) : 0}%)</span></p>
+        </div>
+      </div>
+
       <div className="flex justify-between mb-4">
         <h3 className="text-lg font-medium">Registrations ({rsvps.length})</h3>
         <Button 
