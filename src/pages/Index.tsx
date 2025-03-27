@@ -2,7 +2,7 @@
 import { RSVPForm } from "@/components/RSVPForm";
 import { Hosts } from "@/components/Hosts";
 import { CommentForm } from "@/components/CommentForm";
-import { Youtube, MapPin, Calendar, Clock } from "lucide-react";
+import { MapPin, Calendar, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -142,8 +142,17 @@ const Index = () => {
       <section className="container mx-auto text-center space-y-6 animate-fadeIn px-4" style={{ animationDelay: "500ms" }}>
         <h2 className="text-3xl font-bold mb-4">Watch Livestream</h2>
         <div className="glass p-8 max-w-4xl mx-auto rounded-lg">
-          <div className="aspect-video bg-black/20 rounded-lg flex items-center justify-center mb-4">
-            <Youtube className="w-16 h-16 text-secondary" />
+          <div className="aspect-video bg-black/20 rounded-lg flex items-center justify-center mb-4 overflow-hidden">
+            <div style={{width:"100%", height:"0px", position:"relative", paddingBottom:"56.25%"}}>
+              <iframe 
+                src="https://streamyard.com/watch/zRxRjAks6jXr?embed=true" 
+                width="100%" 
+                height="100%" 
+                frameBorder="0" 
+                allow="autoplay; fullscreen" 
+                style={{width:"100%", height:"100%", position:"absolute", left:"0px", top:"0px", overflow:"hidden"}}
+              ></iframe>
+            </div>
           </div>
           <p className="text-lg mb-4">
             Return here on March 27th at 7:00 PM EST to watch the livestream on YouTube and Facebook
