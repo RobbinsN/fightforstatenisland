@@ -24,6 +24,13 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal, Download, Trash } from "lucide-react";
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -98,7 +105,9 @@ export default function Admin() {
             <div className="glass p-6 rounded-lg">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Check-in & Registration</h2>
-                <CheckInManager />
+                <div className="flex gap-2">
+                  <CheckInManager />
+                </div>
               </div>
               <div className="mt-6">
                 <RSVPManager />
@@ -165,8 +174,76 @@ const RSVPManager = () => {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('rsvps')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      return id;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['rsvps'] });
+      toast.success("Registration deleted successfully");
+    },
+    onError: (error: any) => {
+      console.error('Delete error:', error);
+      toast.error(error.message);
+    },
+  });
+
   const handleCheckIn = (id: string) => {
     checkInMutation.mutate(id);
+  };
+
+  const handleDelete = (id: string) => {
+    if (window.confirm("Are you sure you want to delete this registration?")) {
+      deleteMutation.mutate(id);
+    }
+  };
+
+  const handleDownloadCSV = () => {
+    if (rsvps.length === 0) {
+      toast.error("No registrations to download");
+      return;
+    }
+    
+    // CSV header
+    const headers = ["Full Name", "Email", "Phone", "Address", "Registered Date", "Check-in Status", "Check-in Time"];
+    
+    // Format data
+    const csvData = rsvps.map(rsvp => [
+      rsvp.full_name,
+      rsvp.email || "N/A",
+      rsvp.phone,
+      rsvp.address,
+      new Date(rsvp.created_at).toLocaleDateString(),
+      rsvp.checked_in ? "Checked In" : "Not Checked In",
+      rsvp.checked_in_at ? new Date(rsvp.checked_in_at).toLocaleString() : "N/A"
+    ]);
+    
+    // Combine header and data
+    const csvContent = [
+      headers.join(","),
+      ...csvData.map(row => row.map(cell => 
+        // Escape commas and quotes in cell values
+        `"${String(cell).replace(/"/g, '""')}"`
+      ).join(","))
+    ].join("\n");
+    
+    // Create download link
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `registrations-${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast.success("Registrations downloaded successfully");
   };
 
   if (isLoading) {
@@ -174,52 +251,85 @@ const RSVPManager = () => {
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Contact</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Submitted</TableHead>
-          <TableHead>Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {rsvps.map((rsvp: any) => (
-          <TableRow key={rsvp.id}>
-            <TableCell>{rsvp.full_name}</TableCell>
-            <TableCell>
-              <div className="space-y-1">
-                <p>{rsvp.phone}</p>
-                {rsvp.email && (
-                  <p className="text-sm text-muted-foreground">{rsvp.email}</p>
-                )}
-                <p className="text-sm text-muted-foreground">{rsvp.address}</p>
-              </div>
-            </TableCell>
-            <TableCell>
-              <Badge variant={rsvp.checked_in ? "default" : "outline"}>
-                {rsvp.checked_in ? "Checked In" : "Not Checked In"}
-              </Badge>
-            </TableCell>
-            <TableCell>
-              {new Date(rsvp.created_at).toLocaleDateString()}
-            </TableCell>
-            <TableCell>
-              {!rsvp.checked_in && (
-                <Button
-                  size="sm"
-                  onClick={() => handleCheckIn(rsvp.id)}
-                  className="bg-green-500 hover:bg-green-600"
-                  disabled={checkInMutation.isPending}
-                >
-                  {checkInMutation.isPending ? "Checking In..." : "Check In"}
-                </Button>
-              )}
-            </TableCell>
+    <div>
+      <div className="flex justify-between mb-4">
+        <h3 className="text-lg font-medium">Registrations ({rsvps.length})</h3>
+        <Button 
+          onClick={handleDownloadCSV} 
+          variant="outline" 
+          size="sm" 
+          className="flex items-center gap-2"
+        >
+          <Download className="h-4 w-4" />
+          Download CSV
+        </Button>
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Contact</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Submitted</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {rsvps.map((rsvp: any) => (
+            <TableRow key={rsvp.id}>
+              <TableCell>{rsvp.full_name}</TableCell>
+              <TableCell>
+                <div className="space-y-1">
+                  <p>{rsvp.phone}</p>
+                  {rsvp.email && (
+                    <p className="text-sm text-muted-foreground">{rsvp.email}</p>
+                  )}
+                  <p className="text-sm text-muted-foreground">{rsvp.address}</p>
+                </div>
+              </TableCell>
+              <TableCell>
+                <Badge variant={rsvp.checked_in ? "default" : "outline"}>
+                  {rsvp.checked_in ? "Checked In" : "Not Checked In"}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                {new Date(rsvp.created_at).toLocaleDateString()}
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  {!rsvp.checked_in && (
+                    <Button
+                      size="sm"
+                      onClick={() => handleCheckIn(rsvp.id)}
+                      className="bg-green-500 hover:bg-green-600"
+                      disabled={checkInMutation.isPending}
+                    >
+                      {checkInMutation.isPending ? "Checking In..." : "Check In"}
+                    </Button>
+                  )}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        className="text-red-500 focus:text-red-500 cursor-pointer"
+                        onClick={() => handleDelete(rsvp.id)}
+                      >
+                        <Trash className="h-4 w-4 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 };
