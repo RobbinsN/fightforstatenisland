@@ -175,6 +175,13 @@ const RSVPManager = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
+      const { error: commentsError } = await supabase
+        .from('comments')
+        .delete()
+        .eq('rsvp_id', id);
+
+      if (commentsError) throw commentsError;
+      
       const { error } = await supabase
         .from('rsvps')
         .delete()
